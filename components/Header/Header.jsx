@@ -52,8 +52,6 @@ export default ({
     >
       <ToolbarGroup>
         <Logo className={styles.verticalAlign} />
-      </ToolbarGroup>
-      <ToolbarGroup>
         {navbarPages.map((page) => (
           <FlatButton
             key={page.name}
@@ -69,7 +67,7 @@ export default ({
           location={location}
         />
       </ToolbarGroup>
-      <ToolbarGroup>
+      <ToolbarGroup className={styles.verticalAlign}>
         <AccountWidget />
       </ToolbarGroup>
     </Toolbar>

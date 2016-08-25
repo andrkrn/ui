@@ -1,11 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import IconButton from 'material-ui/IconButton/IconButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import Avatar from 'material-ui/Avatar';
 import Spinner from '../Spinner';
 import Error from '../Error';
-import { REDUCER_KEY } from '../../reducers';
+import { REDUCER_KEY, player } from '../../reducers';
 import { getPlayer } from '../../actions';
 import styles from './AccountWidget.css';
-import { Link } from 'react-router';
+import { Link, withRouter } from 'react-router';
 import { API_HOST } from '../../config';
 // import FontIcon from 'material-ui/FontIcon';
 // import { PlayerPicture } from '../Player';
@@ -17,14 +22,25 @@ import { API_HOST } from '../../config';
           exit_to_app
         </FontIcon>
 */
-const AccountWidget = ({ loading, error, user }) => (
+const profileLink = (path, router) => {
+  router.push(path);
+};
+
+const AccountWidget = ({ router, loading, error, user  }) => (
   <div className={styles.container}>
     {loading && !error && <Spinner />}
     {error && <Error />}
     {!error && !loading && user ? (
       <div className={`${styles.flexContainer} ${styles.tab}`}>
-        <Link to={`/players/${user.account_id}`}>{"Profile"}</Link>
-        <a href={`${API_HOST}/logout`} className={styles.logout}>{"Logout"}</a>
+        <Avatar src={''} size={35} />
+        <IconMenu
+          iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+          targetOrigin={{horizontal: 'right', vertical: 'top'}}
+        >
+          <MenuItem onClick={() => profileLink(`/players/${user.account_id}`, router) } primaryText="My Profile" />
+          <MenuItem href={`${API_HOST}/logout`} primaryText="Logout" />
+        </IconMenu>
       </div>
     )
     : <a href={`${API_HOST}/login`}>Login</a>
@@ -36,7 +52,7 @@ export { AccountWidget };
 
 const mapStateToProps = (state) => {
   const { error, loading, user } = state[REDUCER_KEY].gotMetadata;
-
+  
   return {
     loading,
     error,
@@ -44,8 +60,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  getPlayer: (playerId) => dispatch(getPlayer(playerId)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(AccountWidget);
+export default connect(mapStateToProps)(withRouter(AccountWidget));
